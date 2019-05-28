@@ -48,3 +48,14 @@ export const post = async <T>(
 ): Promise<IHttpResponse<T>> => {
   return await http<T>(new Request(path, args));
 };
+
+export const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const pushArrayWithDelay = async (target: any[], data: any[], pushDelay: number) => {
+  for (const d of data) {
+    target.push(d);
+    await sleep(pushDelay);
+  }
+};

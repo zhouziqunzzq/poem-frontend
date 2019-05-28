@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import {sleep} from '@/helpers.ts';
 
 Vue.use(Vuex);
 

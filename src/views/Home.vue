@@ -7,14 +7,6 @@
         justify-center
         align-content-center
     >
-<!--      <v-flex xs12>-->
-<!--        <v-img-->
-<!--            :src="require('../assets/nlplab.png')"-->
-<!--            class="my-3"-->
-<!--            contain-->
-<!--            height="100"-->
-<!--        ></v-img>-->
-<!--      </v-flex>-->
 
       <v-flex mb-4>
         <h1 class="display-2 font-weight-bold mb-3">

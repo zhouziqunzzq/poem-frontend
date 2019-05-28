@@ -12,11 +12,7 @@
         ></v-text-field>
       </v-flex>
       <v-flex xs12>
-        <v-textarea
-            v-model="generateResult"
-            :label="generateResultPlaceHolder"
-            readonly
-        ></v-textarea>
+        <PoemDisplay :display-list="generateResult"/>
       </v-flex>
 
       <v-flex xs6 lg2>
@@ -35,21 +31,24 @@
 
 <script lang="ts">
   import Vue from "vue";
+  import PoemDisplay from "@/components/PoemDisplay.vue";
   import {validationMixin} from "vuelidate";
   import {required, maxLength, minLength, sameAs} from "vuelidate/lib/validators";
   import config from "@/config.ts";
-  import {get, post} from "@/helpers.ts";
+  import {get, post, pushArrayWithDelay} from "@/helpers.ts";
 
   export default Vue.extend({
     name: "JuejuGenerator",
+    components: {
+      PoemDisplay,
+    },
     mixins: [validationMixin],
     validations: {
       keyword: {required, maxLength: maxLength(4)},
     },
     data: () => ({
-      // Single
       keyword: "",
-      generateResult: "",
+      generateResult: [],
       isQiyan: false,
     }),
     computed: {
@@ -72,9 +71,6 @@
       keywordPlaceHolder() {
         return "请输入关键词";
       },
-      generateResultPlaceHolder() {
-        return "生成结果";
-      },
       generateType() {
         if (this.isQiyan) {
           return "7";
@@ -89,23 +85,25 @@
         if (this.$v.keyword!.$invalid) {
           return;
         } else {
-          this.generateResult = "";
+          this.generateResult = [];
           try {
             const response = await post<{
               result: boolean,
               code: number,
               msg: string,
-              data: string,
+              data: string[],
             }>(config.baseUrl + "key",
               {
                 input: this.keyword,
                 type: this.generateType,
               });
-            console.log(response.parsedBody);
             if (response.parsedBody!.result) {
               this.showInfo(response.parsedBody!.msg);
-              // console.log(response.parsedBody.data);
-              this.generateResult = response.parsedBody.data;
+              pushArrayWithDelay(
+                this.generateResult,
+                response.parsedBody!.data,
+                config.poemDisplayDelay
+              );
             } else {
               this.showError(response.parsedBody!.msg);
             }
